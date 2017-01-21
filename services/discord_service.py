@@ -87,7 +87,7 @@ class DiscordService(ServiceHandler):
                 or (message.channel.is_private and message.author.id in self.config.get("receiver_channels", []))):
             return
 
-        author = message.author.nick if hasattr(message.author, "nick") else message.author.name
+        author = message.author.display_name
 
         if message.channel.is_private:
             channel = "PM"
