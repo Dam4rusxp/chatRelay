@@ -1,0 +1,37 @@
+; Print messages to console
+[debugConsole]
+type = Console
+broadcaster = yes
+receiver = no
+
+[My Discord Server]
+type = Discord
+login = LOGIN
+password = PASSWORD
+broadcaster = yes
+receiver = yes
+; Can be ALL to relay from any channel
+receiver_channels =
+    ID_OF_CHANNELS_TO_SPY_ON_HERE
+    ONE_PER_LINE
+broadcaster_channels =
+    ID_OF_CHANNELS_TO_RELAY_TO_HERE
+    ONE_PER_LINE
+
+[Some XMPP Server]
+type = XMPP
+jid = yourlogin@example.com
+password = PASSWORD
+receiver = yes
+broadcaster = yes
+receiver_rooms =
+    myroom@conference.example.com
+    ONE_PER_LINE
+broadcaster_rooms =
+    anotherroom@conference.example.com
+    ONE_PER_LINE
+; Can be ALL ro relay from any private chat
+receiver_jids =
+    myfriend@example.com
+broadcaster_jids =
+    myself@example.com
