@@ -4,6 +4,7 @@ import configparser
 from services.console_service import ConsoleService
 from services.discord_service import DiscordService
 from services.service_handler import ConfigType
+from services.slack_service import SlackService
 from services.xmpp_service import XMPPService
 
 if __name__ == "__main__":
@@ -31,6 +32,8 @@ if __name__ == "__main__":
             service = ConsoleService
         elif section["type"] == "XMPP":
             service = XMPPService
+        elif section["type"] == "Slack":
+            service = SlackService
 
         if service:
             for key, keytype in service.requested_config_values().items():

@@ -35,3 +35,13 @@ receiver_jids =
     myfriend@example.com
 broadcaster_jids =
     myself@example.com
+
+[A Slack]
+type = Slack
+token = xoxp-1234-5678-90
+; Slack broadcasting is currently not supported
+broadcaster = no
+receiver = yes
+receiver_channels =
+    general
+    random
