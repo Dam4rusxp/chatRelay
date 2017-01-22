@@ -94,7 +94,7 @@ class DiscordService(ServiceHandler):
         else:
             channel = "%s #%s" % (message.server, message.channel)
 
-        await super()._on_receive_message(message.content, source_nick=author, source_channel=channel)
+        await super()._on_receive_message(message.clean_content, source_nick=author, source_channel=channel)
 
     @staticmethod
     def requested_config_values():
