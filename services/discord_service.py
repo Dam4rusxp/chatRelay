@@ -21,8 +21,6 @@ class DiscordService(ServiceHandler):
         broadcaster_channels =
             1234567890
             0987654321
-
-    TODO: Login using regular accounts (stealth mode).
     """
 
     token = None
