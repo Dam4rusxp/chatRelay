@@ -1,6 +1,5 @@
 import asyncio
 import time
-import json
 from slackclient import SlackClient
 import threading
 
