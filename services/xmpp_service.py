@@ -85,7 +85,7 @@ class XMPPService(ServiceHandler):
 
     def _xmpp_connected_event(self, event):
         self.client.send_presence()
-        self.client.get_roster()
+        # self.client.get_roster()
 
         if self.is_receiver():
             for room in self.config.get("receiver_rooms", []):
