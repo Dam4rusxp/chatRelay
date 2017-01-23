@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import configparser
 
@@ -8,8 +9,15 @@ from services.slack_service import SlackService
 from services.xmpp_service import XMPPService
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        prog="Chat Relay",
+        description="A script for relaying messages between different chat services."
+    )
+    parser.add_argument("-c", help="Config file location", default="config.ini")
+    args = parser.parse_args()
+
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config.read(args.c)
 
     for section_name in config.sections():
         section = config[section_name]
