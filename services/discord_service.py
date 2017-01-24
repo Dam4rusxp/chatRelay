@@ -46,6 +46,9 @@ class DiscordService(ServiceHandler):
             if channel:
                 await self.client.send_message(channel, msg)
 
+    async def send_relayed_message(self, msg, source_service="No Source", source_channel=None, source_nick="Nobody"):
+        await self.send_message("**[%s (%s)] %s:**\n%s" % (source_service, source_channel, source_nick, msg))
+
     async def _on_stop(self):
         await self.client.logout()
 
