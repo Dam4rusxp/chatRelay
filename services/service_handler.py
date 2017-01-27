@@ -27,6 +27,8 @@ class ServiceHandler:
         [My Server Connection]
         ; The type of the service (Discord, XMPP, etc.)
         type = MyServer
+        ; Hard switch to enable/disable this service
+        active = yes
         ; Should this connection listen for messages and relay them?
         receiver = yes
         ; Should this connection broadcast relayed messages?
@@ -79,9 +81,13 @@ class ServiceHandler:
     def is_broadcaster(self):
         return self.config["broadcaster"] == "yes"
 
+    def is_active(self):
+        return self.config["active"] == "yes"
+
     async def start(self):
-        print("Starting %s" % self)
-        await self._on_start()
+        if self.is_active():
+            print("Starting %s" % self)
+            await self._on_start()
 
     @abc.abstractclassmethod
     async def _on_start(self):

@@ -54,6 +54,7 @@ if __name__ == "__main__":
 
         service_config = dict()
         service_config["name"] = section_name
+        service_config["active"] = section.get("active", "yes")
         service_config["receiver"] = section.get("receiver", "yes")
         service_config["broadcaster"] = section.get("broadcaster", "no")
         service_config["type"] = section["type"]
