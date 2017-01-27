@@ -65,6 +65,8 @@ class ServiceHandler:
         Used by protocol handlers to relay messages to broadcaster services.
         """
 
+        msg = msg.strip()
+
         if self.is_receiver():
             await self.broadcast_message(msg=msg,
                                          source_service=self,
