@@ -8,6 +8,33 @@ from services.service_handler import ConfigType
 from services.slack_service import SlackService
 from services.xmpp_service import XMPPService
 
+
+def is_valid_section(section_config, name) -> bool:
+    if name in ["yes", "no"]:
+        print("Section has an invalid name '%s', skipping." % section_name)
+        return False
+
+    if not section_config.get("type", None):
+        print("Section '%s' has no type, skipping." % section_name)
+        return False
+
+    return True
+
+
+def grab_service_specific_config(service, section_config) -> dict:
+    result = dict()
+
+    for key, keytype in service.requested_config_values().items():
+        if keytype is ConfigType.SINGLE_VALUE and key in section_config:
+            result[key] = section_config[key]
+        elif keytype is ConfigType.MULTI_VALUE and key in section_config:
+            result[key] = section_config[key].strip().split("\n")
+        else:
+            continue
+
+    return result
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         prog="Chat Relay",
@@ -20,18 +47,16 @@ if __name__ == "__main__":
     config.read(args.c)
 
     for section_name in config.sections():
+        if not is_valid_section(config[section_name], section_name):
+            continue
+
         section = config[section_name]
 
-        sconf = dict()
-        sconf["name"] = section_name
-        sconf["receiver"] = section.get("receiver", "yes")
-        sconf["broadcaster"] = section.get("broadcaster", "no")
-
-        if not section.get("type", None):
-            print("Section \"{}\" has no type!".format(section_name))
-            continue
-        else:
-            sconf["type"] = section["type"]
+        service_config = dict()
+        service_config["name"] = section_name
+        service_config["receiver"] = section.get("receiver", "yes")
+        service_config["broadcaster"] = section.get("broadcaster", "no")
+        service_config["type"] = section["type"]
 
         service = None
         if section["type"] == "Discord":
@@ -42,17 +67,14 @@ if __name__ == "__main__":
             service = XMPPService
         elif section["type"] == "Slack":
             service = SlackService
+        else:
+            print("Unknown service type '%s', skipping." % section["type"])
+            continue
 
-        if service:
-            for key, keytype in service.requested_config_values().items():
-                if keytype is ConfigType.SINGLE_VALUE and key in section:
-                    sconf[key] = section[key]
-                elif keytype is ConfigType.MULTI_VALUE and key in section:
-                    sconf[key] = section[key].strip().split("\n")
-                else:
-                    continue
+        service_config.update(grab_service_specific_config(service, section))
 
-            service = service(sconf)
-            asyncio.ensure_future(service.start())
+        # Initialize and start service
+        service = service(service_config)
+        asyncio.ensure_future(service.start())
 
     asyncio.get_event_loop().run_forever()
