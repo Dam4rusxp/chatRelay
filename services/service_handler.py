@@ -1,15 +1,11 @@
 import abc
 import asyncio
-from enum import Enum
+
+from util.config_type import ConfigType, Subtype
 
 _instances = []
 
 _loop = asyncio.get_event_loop()
-
-
-class ConfigType(Enum):
-    SINGLE_VALUE = 1
-    MULTI_VALUE = 2
 
 
 class ServiceHandler:
@@ -110,9 +106,11 @@ class ServiceHandler:
         pass
 
     @staticmethod
-    @abc.abstractclassmethod
     def requested_config_values():
-        return {}
+        return {"type": ConfigType(Subtype.BASIC, required=True),
+                "active": ConfigType(Subtype.YES_NO, default="yes"),
+                "receiver": ConfigType(Subtype.YES_NO, default="yes"),
+                "broadcaster": ConfigType(Subtype.YES_NO, default="no")}
 
     # Relay a message to all broadcasters
     @staticmethod

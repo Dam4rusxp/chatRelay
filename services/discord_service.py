@@ -1,7 +1,8 @@
 import discord
 from discord import User
 
-from services.service_handler import ServiceHandler, ConfigType
+from services.service_handler import ServiceHandler
+from util.config_type import ConfigType, Subtype
 
 
 class DiscordService(ServiceHandler):
@@ -99,8 +100,8 @@ class DiscordService(ServiceHandler):
 
     @staticmethod
     def requested_config_values():
-        return {"token": ConfigType.SINGLE_VALUE,
-                "login": ConfigType.SINGLE_VALUE,
-                "password": ConfigType.SINGLE_VALUE,
-                "broadcaster_channels": ConfigType.MULTI_VALUE,
-                "receiver_channels": ConfigType.MULTI_VALUE}
+        return {"token": ConfigType(Subtype.LOGIN_INFO),
+                "login": ConfigType(Subtype.LOGIN_INFO),
+                "password": ConfigType(Subtype.LOGIN_INFO),
+                "broadcaster_channels": ConfigType(Subtype.BROADCAST_FILTER, multi_value=True),
+                "receiver_channels": ConfigType(Subtype.RECEIVE_FILTER, multi_value=True)}

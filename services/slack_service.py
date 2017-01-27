@@ -1,9 +1,11 @@
 import asyncio
-import time
-from slackclient import SlackClient
 import threading
+import time
 
-from services.service_handler import ServiceHandler, ConfigType
+from slackclient import SlackClient
+
+from services.service_handler import ServiceHandler
+from util.config_type import Subtype, ConfigType
 
 
 class SlackService(ServiceHandler):
@@ -60,6 +62,6 @@ class SlackService(ServiceHandler):
 
     @staticmethod
     def requested_config_values():
-        return {"token": ConfigType.SINGLE_VALUE,
-                "broadcaster_channels": ConfigType.MULTI_VALUE,
-                "receiver_channels": ConfigType.MULTI_VALUE}
+        return {"token": ConfigType(Subtype.LOGIN_INFO, required=True),
+                "broadcaster_channels": ConfigType(Subtype.BROADCAST_FILTER, multi_value=True),
+                "receiver_channels": ConfigType(Subtype.RECEIVE_FILTER, multi_value=True)}

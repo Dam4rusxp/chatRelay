@@ -19,7 +19,3 @@ class ConsoleService(ServiceHandler):
     async def _on_send_message(self, msg):
         if self._started:
             print(msg)
-
-    @staticmethod
-    def requested_config_values():
-        return {}

@@ -1,7 +1,9 @@
 import asyncio
 
 from sleekxmpp import ClientXMPP
-from services.service_handler import ServiceHandler, ConfigType
+
+from services.service_handler import ServiceHandler
+from util.config_type import ConfigType, Subtype
 
 
 class XMPPService(ServiceHandler):
@@ -104,9 +106,9 @@ class XMPPService(ServiceHandler):
 
     @staticmethod
     def requested_config_values():
-        return {"jid": ConfigType.SINGLE_VALUE,
-                "password": ConfigType.SINGLE_VALUE,
-                "broadcaster_rooms": ConfigType.MULTI_VALUE,
-                "receiver_rooms": ConfigType.MULTI_VALUE,
-                "broadcaster_jids": ConfigType.MULTI_VALUE,
-                "receiver_jids": ConfigType.MULTI_VALUE}
+        return {"jid": ConfigType(Subtype.LOGIN_INFO, required=True),
+                "password": ConfigType(Subtype.LOGIN_INFO, required=True),
+                "broadcaster_rooms": ConfigType(Subtype.BROADCAST_FILTER, multi_value=True),
+                "receiver_rooms": ConfigType(Subtype.RECEIVE_FILTER, multi_value=True),
+                "broadcaster_jids": ConfigType(Subtype.BROADCAST_FILTER, multi_value=True),
+                "receiver_jids": ConfigType(Subtype.RECEIVE_FILTER, multi_value=True)}
