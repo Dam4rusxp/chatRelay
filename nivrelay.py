@@ -41,7 +41,7 @@ def _parse_requested_values(section_config, name, requested_values) -> dict:
                 return None
 
         elif config_type.subtype is Subtype.RECEIVE_FILTER:
-            real_receiver_channels = []
+            real_receiver_channels = set()
             for line in result[key]:
                 if "->" in line:
                     if not result.get("receive_filter", None):
@@ -50,13 +50,13 @@ def _parse_requested_values(section_config, name, requested_values) -> dict:
                     channel = channel.strip()
                     target = target.strip()
                     result["receive_filter"][channel] = target
-                    real_receiver_channels.append(channel)
+                    real_receiver_channels.add(channel)
                 else:
-                    real_receiver_channels.append(line)
+                    real_receiver_channels.add(line)
             result[key] = real_receiver_channels
 
         elif config_type.subtype is Subtype.BROADCAST_FILTER:
-            real_broadcast_channels = []
+            real_broadcast_channels = set()
             for line in result[key]:
                 if "->" in line:
                     if not result.get("broadcast_filter", None):
@@ -65,9 +65,9 @@ def _parse_requested_values(section_config, name, requested_values) -> dict:
                     channel = channel.strip()
                     source = source.strip()
                     result["broadcast_filter"][source] = channel
-                    real_broadcast_channels.append(channel)
+                    real_broadcast_channels.add(channel)
                 else:
-                    real_broadcast_channels.append(line)
+                    real_broadcast_channels.add(line)
             result[key] = real_broadcast_channels
 
     return result
