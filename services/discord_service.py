@@ -47,8 +47,8 @@ class DiscordService(ServiceHandler):
             if channel:
                 await self.client.send_message(channel, msg)
 
-    async def send_relayed_message(self, msg, source_service="No Source", source_channel=None, source_nick="Nobody"):
-        await self.send_message("**[%s (%s)] %s:**\n%s" % (source_service, source_channel, source_nick, msg))
+    async def send_relayed_message(self, msg, source_service, display_channel, display_nick):
+        await self.send_message("**[%s (%s)] %s:**\n%s" % (source_service, display_channel, display_nick, msg))
 
     async def _on_stop(self):
         await self.client.logout()
@@ -90,13 +90,15 @@ class DiscordService(ServiceHandler):
             return
 
         author = message.author.display_name
+        chid = message.channel.id
 
         if message.channel.is_private:
             channel = "PM"
         else:
             channel = "%s #%s" % (message.server, message.channel)
 
-        await super()._on_receive_message(message.clean_content, source_nick=author, source_channel=channel)
+        await super()._on_receive_message(message.clean_content, source_nick=author, source_channel=chid,
+                                          readable_channel=channel)
 
     @staticmethod
     def requested_config_values():

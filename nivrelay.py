@@ -40,6 +40,22 @@ def _parse_requested_values(section_config, name, requested_values) -> dict:
                 print("Key '%s' in section '%s' must be either 'yes' or 'no', skipping." % (key, name))
                 return None
 
+        elif config_type.subtype is Subtype.RECEIVE_FILTER:
+            real_receiver_channels = []
+            for line in result[key]:
+                if "->" in line:
+                    if not result.get("receive_filter", None):
+                        result["receive_filter"] = dict()
+                    channel, target = line.split("->")
+                    channel = channel.strip()
+                    target = target.strip()
+                    result["receive_filter"][channel] = target
+                    real_receiver_channels.append(channel)
+                else:
+                    real_receiver_channels.append(line)
+
+            result[key] = real_receiver_channels
+
     return result
 
 

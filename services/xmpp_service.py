@@ -62,14 +62,16 @@ class XMPPService(ServiceHandler):
             if not ("ALL" in self.config.get("receiver_jids", [])
                     or msg["from"].bare in self.config.get("receiver_jids", [])):
                 return
-            channel = "PM"
+            readable_channel = "PM"
             author = msg["from"].bare
+            channel = author
 
         elif msg["type"] == "groupchat":
             if msg["mucroom"] not in self.config.get("receiver_rooms", []):
                 return
 
-            channel = msg["mucroom"]
+            readable_channel = msg["mucroom"]
+            channel = readable_channel
             author = msg["mucnick"]
 
         else:
@@ -78,7 +80,8 @@ class XMPPService(ServiceHandler):
 
         future = super()._on_receive_message(msg=msg["body"],
                                              source_channel=channel,
-                                             source_nick=author)
+                                             source_nick=author,
+                                             readable_channel=readable_channel)
         asyncio.run_coroutine_threadsafe(future, self.loop)
 
     def _xmpp_muc_msg_received_event(self, msg):

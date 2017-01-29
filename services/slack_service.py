@@ -46,11 +46,12 @@ class SlackService(ServiceHandler):
                             continue
 
                         # Ignore, if we do not want this channel
-                        if channel not in self.config["receiver_channels"]\
+                        if channel not in self.config["receiver_channels"] \
                                 and event["channel"] not in self.config["receiver_channels"]:
                             continue
 
-                        future = super()._on_receive_message(event["text"], source_channel=channel, source_nick=user)
+                        future = super()._on_receive_message(event["text"], source_channel=channel, source_nick=user,
+                                                             readable_channel=channel)
                         asyncio.run_coroutine_threadsafe(future, loop=self.loop)
             else:
                 # Back off when there are no events, sleep max 5 seconds

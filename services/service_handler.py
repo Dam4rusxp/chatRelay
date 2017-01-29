@@ -46,33 +46,31 @@ class ServiceHandler:
         if self.is_broadcaster():
             await self._on_send_message(msg)
 
-    async def send_relayed_message(self, msg, source_service="No Source", source_channel=None, source_nick="Nobody"):
+    async def send_relayed_message(self, msg, source_service, display_channel, display_nick):
         """
         Overwrite this in your service to make use of multiline messages or text formatting.
         This implementation aims to have the best compatibility while still delivering all information.
         """
 
-        await self.send_message("[%s (%s)] %s: %s" % (source_service, source_channel, source_nick, msg))
+        await self.send_message("[%s (%s)] %s: %s" % (source_service, display_channel, display_nick, msg))
 
     @abc.abstractclassmethod
     async def _on_send_message(self, msg):
         pass
 
-    async def _on_receive_message(self, msg, source_channel=None, source_nick=None):
+    async def _on_receive_message(self, msg, source_channel, source_nick, readable_channel=None):
         """
         Used by protocol handlers to relay messages to broadcaster services.
         """
 
         msg = msg.strip()
 
-        if self.config["hide_channels"] == "yes":
-            source_channel = "hidden"
-
         if self.is_receiver():
             await self.broadcast_message(msg=msg,
                                          source_service=self,
                                          source_nick=source_nick,
-                                         source_channel=source_channel)
+                                         source_channel=source_channel,
+                                         readable_channel=readable_channel)
 
     def is_receiver(self):
         return self.config["receiver"] == "yes"
@@ -118,12 +116,25 @@ class ServiceHandler:
 
     # Relay a message to all broadcasters
     @staticmethod
-    async def broadcast_message(msg, source_service=None, source_nick=None, source_channel=None):
+    async def broadcast_message(msg, source_service, source_nick, source_channel, readable_channel=None):
+        # Hide channel name if requested by config
+        if source_service.config["hide_channels"] == "yes":
+            readable_channel = "hidden"
+
         for ini in _instances:
-            await ini.send_relayed_message(msg=msg,
-                                           source_service=source_service,
-                                           source_nick=source_nick,
-                                           source_channel=source_channel)
+            receive_filter = source_service.config.get("receive_filter", None)
+
+            # Broadcast to ini if:
+            # - There are no receive filters
+            # - Or the source channel has no filters
+            # - Or the target is allowed in the filter
+            if not receive_filter \
+                    or source_channel not in receive_filter \
+                    or ini.config["name"] == receive_filter[source_channel]:
+                await ini.send_relayed_message(msg=msg,
+                                               source_service=source_service,
+                                               display_nick=source_nick,
+                                               display_channel=readable_channel)
 
     @staticmethod
     def get_instances():
