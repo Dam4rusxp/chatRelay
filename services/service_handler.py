@@ -65,6 +65,9 @@ class ServiceHandler:
 
         msg = msg.strip()
 
+        if self.config["hide_channels"] == "yes":
+            source_channel = "hidden"
+
         if self.is_receiver():
             await self.broadcast_message(msg=msg,
                                          source_service=self,
@@ -110,7 +113,8 @@ class ServiceHandler:
         return {"type": ConfigType(Subtype.BASIC, required=True),
                 "active": ConfigType(Subtype.YES_NO, default="yes"),
                 "receiver": ConfigType(Subtype.YES_NO, default="yes"),
-                "broadcaster": ConfigType(Subtype.YES_NO, default="no")}
+                "broadcaster": ConfigType(Subtype.YES_NO, default="no"),
+                "hide_channels": ConfigType(Subtype.YES_NO, default="no")}
 
     # Relay a message to all broadcasters
     @staticmethod
