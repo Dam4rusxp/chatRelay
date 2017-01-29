@@ -58,7 +58,7 @@ class SlackService(ServiceHandler):
                 sleep_time = min(sleep_time + 1, 5)
             time.sleep(sleep_time)
 
-    async def _on_send_message(self, msg):
+    async def _on_send_message(self, msg, source_service=None):
         pass
 
     @staticmethod

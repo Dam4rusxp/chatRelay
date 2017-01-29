@@ -42,9 +42,9 @@ class ServiceHandler:
         self.config = config
         self.loop = _loop
 
-    async def send_message(self, msg):
+    async def send_message(self, msg, source_service=None):
         if self.is_broadcaster():
-            await self._on_send_message(msg)
+            await self._on_send_message(msg, source_service)
 
     async def send_relayed_message(self, msg, source_service, display_channel, display_nick):
         """
@@ -52,10 +52,11 @@ class ServiceHandler:
         This implementation aims to have the best compatibility while still delivering all information.
         """
 
-        await self.send_message("[%s (%s)] %s: %s" % (source_service, display_channel, display_nick, msg))
+        await self.send_message("[%s (%s)] %s: %s" % (source_service, display_channel, display_nick, msg),
+                                source_service)
 
     @abc.abstractclassmethod
-    async def _on_send_message(self, msg):
+    async def _on_send_message(self, msg, source_service=None):
         pass
 
     async def _on_receive_message(self, msg, source_channel, source_nick, readable_channel=None):
@@ -135,6 +136,19 @@ class ServiceHandler:
                                                source_service=source_service,
                                                display_nick=source_nick,
                                                display_channel=readable_channel)
+
+    def should_broadcast(self, source_service, target_channel):
+        broadcast_filter = self.config.get("broadcast_filter", None)
+        source_service_name = None
+        if source_service:
+            source_service_name = source_service.config["name"]
+
+        result = (not source_service
+                  or not broadcast_filter
+                  or (source_service_name in broadcast_filter
+                      and broadcast_filter[source_service_name] == target_channel))
+
+        return result
 
     @staticmethod
     def get_instances():

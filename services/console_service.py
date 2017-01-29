@@ -16,6 +16,6 @@ class ConsoleService(ServiceHandler):
     async def _on_start(self):
         self._started = True
 
-    async def _on_send_message(self, msg):
+    async def _on_send_message(self, msg, source_service=None):
         if self._started:
             print(msg)

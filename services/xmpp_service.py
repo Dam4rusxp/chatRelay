@@ -44,12 +44,14 @@ class XMPPService(ServiceHandler):
         self.client.connect()
         self.client.process()
 
-    async def _on_send_message(self, msg):
+    async def _on_send_message(self, msg, source_service=None):
         for room in self.config.get("broadcaster_rooms", []):
-            self.client.send_message(mto=room, mbody=msg, mtype="groupchat")
+            if self.should_broadcast(source_service, room):
+                self.client.send_message(mto=room, mbody=msg, mtype="groupchat")
 
         for jid in self.config.get("broadcaster_jids", []):
-            self.client.send_message(mto=jid, mbody=msg, mtype="chat")
+            if self.should_broadcast(source_service, jid):
+                self.client.send_message(mto=jid, mbody=msg, mtype="chat")
 
     def _xmpp_msg_received_event(self, msg):
         # Ignore our own messages at all costs

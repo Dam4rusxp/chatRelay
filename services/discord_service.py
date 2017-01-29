@@ -32,7 +32,7 @@ class DiscordService(ServiceHandler):
         super().__init__(config)
         self.client = discord.Client()
 
-    async def _on_send_message(self, msg):
+    async def _on_send_message(self, msg, source_service=None):
         if not self.config.get("broadcaster_channels", None):
             print("No broadcast channels configured for %s" % self)
             return
@@ -44,11 +44,12 @@ class DiscordService(ServiceHandler):
             if not channel:
                 channel = await self.client.start_private_message(User(id=chanid))
 
-            if channel:
+            if channel and self.should_broadcast(source_service, chanid):
                 await self.client.send_message(channel, msg)
 
     async def send_relayed_message(self, msg, source_service, display_channel, display_nick):
-        await self.send_message("**[%s (%s)] %s:**\n%s" % (source_service, display_channel, display_nick, msg))
+        await self.send_message("**[%s (%s)] %s:**\n%s" % (source_service, display_channel, display_nick, msg),
+                                source_service)
 
     async def _on_stop(self):
         await self.client.logout()
