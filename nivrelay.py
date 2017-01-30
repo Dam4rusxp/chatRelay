@@ -98,6 +98,10 @@ def parse_config(section_config, name) -> dict:
         return None
     result.update(service_parse)
 
+    for key in section_config.keys():
+        if key not in result:
+            print("Unknown config key '%s' for service '%s'." % (key, name))
+
     return result
 
 
